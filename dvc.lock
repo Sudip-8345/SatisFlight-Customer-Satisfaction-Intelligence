@@ -49,3 +49,20 @@ stages:
       md5: a9e55acf1bb594d9cba2bb29bc912bea.dir
       size: 6346057
       nfiles: 2
+  model_building:
+    cmd: src\model_buiding.py
+    deps:
+    - path: data/featured
+      hash: md5
+      md5: a9e55acf1bb594d9cba2bb29bc912bea.dir
+      size: 6346057
+      nfiles: 2
+    - path: src\model_buiding.py
+      hash: md5
+      md5: 479cec3326760467288b1bcdc49ede2b
+      size: 2092
+    outs:
+    - path: models\lgbm_model.pkl
+      hash: md5
+      md5: 7816d8bb65924b057c433ea4bcfd26e5
+      size: 3433909
