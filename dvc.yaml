@@ -25,4 +25,11 @@ stages:
     - data/featured
     - src\model_buiding.py
     outs:
+    - models\best_model.pkl
+  evaluate_model:
+    cmd: python src\evaluate_model.py
+    deps:
     - models\lgbm_model.pkl
+    - src\evaluate_model.py
+    metrics:
+    - reports\metrics.json

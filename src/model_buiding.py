@@ -2,7 +2,8 @@ import os
 import pickle
 import yaml
 import pandas as pd
-from lightgbm import LGBMClassifier
+# from lightgbm import LGBMClassifier
+from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 
 def load_model(model_path: str):
@@ -22,12 +23,12 @@ def load_params(params_path: str) -> dict:
     with open(params_path, 'r') as file:
         return yaml.safe_load(file)
 
-def train_model(X_train: pd.DataFrame, y_train: pd.Series, params: dict) -> LGBMClassifier:
-    model = LGBMClassifier(**params)
+def train_model(X_train: pd.DataFrame, y_train: pd.Series, params: dict) -> XGBClassifier:
+    model = XGBClassifier(**params)
     model.fit(X_train, y_train)
     return model
 
-def save_model(model: LGBMClassifier, model_path: str) -> None:
+def save_model(model: XGBClassifier, model_path: str) -> None:
     try:
         os.makedirs(os.path.dirname(model_path), exist_ok=True)
         with open(model_path, 'wb') as file:
@@ -39,7 +40,7 @@ def save_model(model: LGBMClassifier, model_path: str) -> None:
 def main():
     try:
         params_path = 'params.yaml'
-        model_path = 'models/lgbm_model.pkl'
+        model_path = 'models/best_model.pkl'
         data_path = './data/featured/train_featured.csv'
 
         # Load parameters
@@ -59,6 +60,9 @@ def main():
         # Save model
         save_model(model, model_path)
 
+        with open("models/feature_order.pkl", "wb") as f:
+            pickle.dump(list(X.columns), f)
+            
     except Exception as e:
         print(f"An error occurred: {e}")
 
