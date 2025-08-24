@@ -59,8 +59,8 @@ stages:
       nfiles: 2
     - path: src\model_buiding.py
       hash: md5
-      md5: 7c5eca05f845215213f1cf0eb10de672
-      size: 2244
+      md5: 0cedcb7b930253b58c214949556d429c
+      size: 2767
     outs:
     - path: models\best_model.pkl
       hash: md5
@@ -69,14 +69,14 @@ stages:
   evaluate_model:
     cmd: python src\evaluate_model.py
     deps:
-    - path: models\lgbm_model.pkl
+    - path: models\best_model.pkl
       hash: md5
-      md5: 7816d8bb65924b057c433ea4bcfd26e5
-      size: 3433909
+      md5: 3fd08193647bb6b464e476be7c3787c1
+      size: 6664562
     - path: src\evaluate_model.py
       hash: md5
-      md5: 305ef4420d255a346adb83d3880656f0
-      size: 3759
+      md5: 245109f2f6c4e0fb1da176f31560da90
+      size: 6127
     outs:
     - path: reports\metrics.json
       hash: md5

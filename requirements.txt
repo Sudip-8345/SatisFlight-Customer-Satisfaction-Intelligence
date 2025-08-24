@@ -1,8 +1,13 @@
-# local package
--e .
-
-# external requirements
-numpy
 pandas
+numpy
 scikit-learn
-
+lightgbm
+xgboost
+matplotlib
+seaborn
+shap
+pyyaml
+dvc
+joblib
+mlflow
+dagshub

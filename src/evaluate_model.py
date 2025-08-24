@@ -6,6 +6,11 @@ import pandas as pd
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, precision_score, recall_score, f1_score
 import matplotlib.pyplot as plt
 import seaborn as sns
+import shap
+import mlflow
+import dagshub
+
+dagshub.init(repo_owner='Sudip-8345', repo_name='SatisFlight-Customer-Satisfaction-Intelligence', mlflow=True)
 
 def load_data(file_path):
     """Load dataset from a CSV file."""
@@ -70,34 +75,87 @@ def save_metrics(metrics, save_path: str) -> None:
         print(f"Metrics saved to {save_path}")
     except Exception as e:
         raise IOError(f"Error saving metrics: {e}")
+def model_interpretation(model, feature_names):
+    """Interpret the model using feature importance."""
+    try:
+        if hasattr(model, 'feature_importances_'):
+            importances = model.feature_importances_
+            indices = np.argsort(importances)[::-1]
+
+            plt.figure(figsize=(10, 6))
+            plt.title("Feature Importances")
+            plt.bar(range(len(importances)), importances[indices], align='center')
+            plt.xticks(range(len(importances)), [feature_names[i] for i in indices], rotation=90)
+            plt.tight_layout()
+            with open('reports/feature_importance.png', 'wb') as f:
+                plt.savefig(f)
+            plt.close()
+        else:
+            print("Model does not have feature_importances_ attribute.")
+    except Exception as e:
+        raise RuntimeError(f"Failed to interpret model: {e}")
     
+def local_interpretation(model, X_sample):
+    """Interpret a single prediction using SHAP values."""
+    try:
+        explainer = shap.Explainer(model)
+        shap_values = explainer(X_sample)
+
+        shap.plots.waterfall(shap_values[0])
+        plt.title("SHAP Waterfall Plot")
+    except ImportError:
+        print("SHAP library is not installed. Skipping local interpretation.")
+    except Exception as e:
+        raise RuntimeError(f"Failed to perform local interpretation: {e}")
 def main():
     try:
-        model_path = 'models/best_model.pkl'
-        test_data_path = './data/featured/test_featured.csv'
-        metrics_save_path = 'reports/metrics.json'
+        mlflow.set_tracking_uri("https://dagshub.com/Sudip-8345/SatisFlight-Customer-Satisfaction-Intelligence.mlflow")
+        mlflow.set_experiment("SatisFlight_Evaluation")
 
-        # Load the trained model
-        model = load_model(model_path)
+        data_path = './data/featured/test_featured.csv'
+        model_path = 'models/best_model.pkl'    
+        metrics_path = 'reports/metrics.json'
 
-        # Load test data
-        if not os.path.exists(test_data_path):
-            raise FileNotFoundError(f"Test data file not found: {test_data_path}")
-        test_data = load_data(test_data_path)
-        with open("models/feature_order.pkl", "rb") as f:
-            feature_order = pickle.load(f)
-        test_data = test_data[feature_order + ['satisfaction']]
-        
-        test_data = test_data.apply(pd.to_numeric, errors='raise')
+        with mlflow.start_run():
+            # Load data
+            data = load_data(data_path)
 
-        X_test = test_data.drop(columns=['satisfaction'])
-        y_test = test_data['satisfaction']
+            data = data.apply(pd.to_numeric, errors='raise')
 
-        # Evaluate the model
-        metrics = evaluate_model(model, X_test, y_test)
+            X_test = data.drop(columns=['satisfaction'])
+            y_test = data['satisfaction']
 
-        # Save the evaluation metrics
-        save_metrics(metrics, metrics_save_path)
+            with open("models/feature_order.pkl", "rb") as f:
+                feature_order = pickle.load(f)
+            X_test = X_test[feature_order]
+
+            # Load model
+            model = load_model(model_path)
+
+            # Evaluate model
+            metrics = evaluate_model(model, X_test, y_test)
+
+            # Log metrics to MLflow
+            mlflow.log_metrics({
+                'accuracy': metrics['accuracy'],
+                'precision': metrics['precision'],
+                'recall': metrics['recall'],
+                'f1_score': metrics['f1_score']
+            })
+            # Save metrics
+            save_metrics(metrics, metrics_path)
+            
+            mlflow.log_artifact('reports/confusion_matrix.png')
+            mlflow.log_artifact('reports/feature_importance.png')
+            mlflow.log_artifact(metrics_path)
+
+            # Model interpretation
+            model_interpretation(model, X_test.columns)
+
+            # Local interpretation on a random sample
+            sample_index = np.random.choice(X_test.index, size=1)
+            X_sample = X_test.loc[sample_index]
+            local_interpretation(model, X_sample)
 
     except Exception as e:
         print(f"Error in evaluation process: {e}")

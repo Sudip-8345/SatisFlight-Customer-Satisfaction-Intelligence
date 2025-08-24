@@ -5,6 +5,10 @@ import pandas as pd
 # from lightgbm import LGBMClassifier
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
+import mlflow
+import dagshub
+
+dagshub.init(repo_owner='Sudip-8345', repo_name='SatisFlight-Customer-Satisfaction-Intelligence', mlflow=True)
 
 def load_model(model_path: str):
     if not os.path.exists(model_path):
@@ -24,10 +28,17 @@ def load_params(params_path: str) -> dict:
         return yaml.safe_load(file)
 
 def train_model(X_train: pd.DataFrame, y_train: pd.Series, params: dict) -> XGBClassifier:
-    model = XGBClassifier(**params)
-    model.fit(X_train, y_train)
-    return model
-
+    try:
+        mlflow.set_tracking_uri("https://dagshub.com/Sudip-8345/SatisFlight-Customer-Satisfaction-Intelligence.mlflow")
+        mlflow.set_experiment("SatisFlight_using_XGBoost")
+        with mlflow.start_run():
+            model = XGBClassifier(**params)
+            model.fit(X_train, y_train)
+            mlflow.log_params(params)
+            return model
+    except Exception as e:
+        raise RuntimeError(f"Error training model: {e}")
+    
 def save_model(model: XGBClassifier, model_path: str) -> None:
     try:
         os.makedirs(os.path.dirname(model_path), exist_ok=True)
