@@ -20,7 +20,7 @@ stages:
     outs:
     - data/featured
   model_building:
-    cmd: src/model_buiding.py
+    cmd: python src/model_buiding.py
     deps:
     - data/featured
     - src/model_buiding.py
