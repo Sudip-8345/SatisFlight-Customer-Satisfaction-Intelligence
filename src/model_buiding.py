@@ -6,9 +6,18 @@ import pandas as pd
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 import mlflow
-import dagshub
+# import dagshub
+# dagshub.init(repo_owner='Sudip-8345', repo_name='SatisFlight-Customer-Satisfaction-Intelligence', mlflow=True)
 
-dagshub.init(repo_owner='Sudip-8345', repo_name='SatisFlight-Customer-Satisfaction-Intelligence', mlflow=True)
+dagshub_token = os.getenv("MLFLOW_TRACKING_PASSWORD") 
+if dagshub_token:
+    os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
+    os.environ["MLFLOW_TRACKING_USERNAME"] = os.getenv("MLFLOW_TRACKING_USERNAME", "Sudip-8345")
+    os.environ["MLFLOW_TRACKING_URI"] = os.getenv(
+        "MLFLOW_TRACKING_URI",
+        "https://dagshub.com/Sudip-8345/SatisFlight-Customer-Satisfaction-Intelligence.mlflow"
+    )
+
 
 def load_model(model_path: str):
     if not os.path.exists(model_path):
@@ -29,7 +38,6 @@ def load_params(params_path: str) -> dict:
 
 def train_model(X_train: pd.DataFrame, y_train: pd.Series, params: dict) -> XGBClassifier:
     try:
-        mlflow.set_tracking_uri("https://dagshub.com/Sudip-8345/SatisFlight-Customer-Satisfaction-Intelligence.mlflow")
         mlflow.set_experiment("SatisFlight_using_XGBoost")
         with mlflow.start_run():
             model = XGBClassifier(**params)

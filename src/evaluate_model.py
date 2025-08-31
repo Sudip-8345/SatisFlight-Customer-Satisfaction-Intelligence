@@ -8,9 +8,18 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import shap
 import mlflow
-import dagshub
 
-dagshub.init(repo_owner='Sudip-8345', repo_name='SatisFlight-Customer-Satisfaction-Intelligence', mlflow=True)
+# import dagshub
+# dagshub.init(repo_owner='Sudip-8345', repo_name='SatisFlight-Customer-Satisfaction-Intelligence', mlflow=True)
+
+dagshub_token = os.getenv("MLFLOW_TRACKING_PASSWORD")  
+if dagshub_token:
+    os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
+    os.environ["MLFLOW_TRACKING_USERNAME"] = os.getenv("MLFLOW_TRACKING_USERNAME", "Sudip-8345")
+    os.environ["MLFLOW_TRACKING_URI"] = os.getenv(
+        "MLFLOW_TRACKING_URI",
+        "https://dagshub.com/Sudip-8345/SatisFlight-Customer-Satisfaction-Intelligence.mlflow"
+    )
 
 def load_data(file_path):
     """Load dataset from a CSV file."""
@@ -109,7 +118,6 @@ def local_interpretation(model, X_sample):
         raise RuntimeError(f"Failed to perform local interpretation: {e}")
 def main():
     try:
-        mlflow.set_tracking_uri("https://dagshub.com/Sudip-8345/SatisFlight-Customer-Satisfaction-Intelligence.mlflow")
         mlflow.set_experiment("SatisFlight_Evaluation")
 
         data_path = './data/featured/test_featured.csv'
