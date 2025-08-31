@@ -11,3 +11,5 @@ dvc
 joblib
 mlflow
 dagshub
+flake8
+pytest

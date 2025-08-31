@@ -157,6 +157,13 @@ def main():
             X_sample = X_test.loc[sample_index]
             local_interpretation(model, X_sample)
 
+            run_info = {
+                'run_id': mlflow.active_run().info.run_id,
+                'model_name': 'XGBoost Classifier'}
+            reports_path = 'reports/run_info.json'
+            with open(reports_path, 'w') as f:
+                json.dump(run_info, f, indent=4)
+                
     except Exception as e:
         print(f"Error in evaluation process: {e}")
 
