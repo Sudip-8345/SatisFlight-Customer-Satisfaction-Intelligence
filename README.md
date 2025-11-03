@@ -100,6 +100,7 @@ Key influential factors in customer satisfaction:
     │   │
     │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
     │       └── visualize.py
+```
 ## Pipeline Stages 🔄
 
 1. **Data Collection**: Initial dataset acquisition
@@ -107,7 +108,7 @@ Key influential factors in customer satisfaction:
 3. **Feature Engineering**: Feature selection and transformation
 4. **Model Building**: XGBoost classifier training
 5. **Evaluation**: Performance metrics and model interpretation
-```
+
 ## Getting Started 🚀
 
 ### Prerequisites
