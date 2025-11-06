@@ -13,3 +13,5 @@ mlflow
 dagshub
 flake8
 pytest
+dvc[s3]
+awscli

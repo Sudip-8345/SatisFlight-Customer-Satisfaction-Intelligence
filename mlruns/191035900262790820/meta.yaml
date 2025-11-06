@@ -1,0 +1,6 @@
+artifact_location: file:///C:/Users/PC/Desktop/Project/Airlines-Customer-Satisfaction/mlruns/191035900262790820
+creation_time: 1762449238447
+experiment_id: '191035900262790820'
+last_update_time: 1762449238447
+lifecycle_stage: active
+name: SatisFlight_using_XGBoost

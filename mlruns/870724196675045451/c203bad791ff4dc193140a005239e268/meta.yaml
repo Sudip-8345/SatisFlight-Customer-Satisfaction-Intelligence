@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/PC/Desktop/Project/Airlines-Customer-Satisfaction/mlruns/870724196675045451/c203bad791ff4dc193140a005239e268/artifacts
+end_time: 1762449282515
+entry_point_name: ''
+experiment_id: '870724196675045451'
+lifecycle_stage: active
+run_id: c203bad791ff4dc193140a005239e268
+run_name: able-seal-679
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1762449262488
+status: 3
+tags: []
+user_id: PC
