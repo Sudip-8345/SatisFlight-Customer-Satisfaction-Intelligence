@@ -1,4 +1,7 @@
 [core]
     remote = dvcstore
 ['remote "dvcstore"']
-    url = s3://sudip-dvc-user
+    url = s3://sudip-project-s3
+    endpointurl = https://s3.eu-north-1.amazonaws.com
+    region = eu-north-1
+    use_ssl = true

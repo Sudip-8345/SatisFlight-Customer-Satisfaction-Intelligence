@@ -155,6 +155,20 @@ dvc repro
 - CI/CD pipeline
 - Model evaluation
 
+### AWS ☁️
+
+- S3 Bucket is used to store raw, processed, and model data versions tracked via DVC.
+
+- Region: eu-north-1 (Stockholm)
+
+- IAM User: Configured with permissions for s3:PutObject, s3:GetObject, and s3:ListBucket.
+
+- Integration:
+DVC is connected to AWS S3 as a remote storage for versioned data using the command:
+
+```dvc remote add -d s3remote s3://sudip-project-s3
+dvc remote modify s3remote endpointurl https://s3.eu-north-1.amazonaws.com 
+```
 ## License 📜
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
